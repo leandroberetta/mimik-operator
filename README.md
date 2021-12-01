@@ -4,13 +4,15 @@ Operator to deploy [Mimik](https://github.com/leandroberetta/mimik) instances in
 
 ## Installation
 
-Create the CatalogSource resource pointing to the Mimik Operator index:
+### OpenShift 4
+
+Create the CatalogSource resource pointing to the Mimik catalog index:
 
 ```bash
 echo "apiVersion: operators.coreos.com/v1alpha1
 kind: CatalogSource
 metadata:
-  name: mimik-operator
+  name: mimik-catalog
   namespace: openshift-marketplace
 spec:
   sourceType: grpc
@@ -23,14 +25,45 @@ Finally create a Subscription resource:
 echo "apiVersion: operators.coreos.com/v1alpha1
 kind: Subscription
 metadata:
-  name: mimik-operator
+  name: mimik-subscription
   namespace: openshift-operators 
 spec:
   channel: alpha
   installPlanApproval: Automatic
   name: mimik-operator
-  source: mimik-operator
+  source: mimik-catalog
   sourceNamespace: openshift-marketplace" | oc apply -f -
+```
+
+### Kubernetes
+
+Create the CatalogSource resource pointing to the Mimik catalog index:
+
+```bash
+echo "apiVersion: operators.coreos.com/v1alpha1
+kind: CatalogSource
+metadata:
+  name: mimik-catalog
+  namespace: olm
+spec:
+  sourceType: grpc
+  image: quay.io/leandroberetta/mimik-operator-index:v0.0.1" | oc apply -f -
+```
+
+Finally create a Subscription resource:
+
+```bash
+echo "apiVersion: operators.coreos.com/v1alpha1
+kind: Subscription
+metadata:
+  name: mimik-subscription
+  namespace: openshift-operators 
+spec:
+  channel: alpha
+  installPlanApproval: Automatic
+  name: mimik-operator
+  source: mimik-catalog
+  sourceNamespace: olm" | oc apply -f -
 ```
 
 ## Usage
